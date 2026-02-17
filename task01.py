@@ -8,7 +8,7 @@ def display_info() -> None:
     countries = set()
 
     for laureate in data.get("laureates", []):
-
+>
         firstname = laureate.get("firstname", "") or "" #récupère le prénom
         surname = laureate.get("surname", "") or ""
         full_name = f"{firstname} {surname}".strip()
