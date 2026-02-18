@@ -25,9 +25,9 @@ def insert_laureates(json_file: str, db_name: str) -> None:
     code_to_id = {}
     name_to_id = {}
     for cid, code, name in rows:
-        if code:
+        if code and code not in code_to_id:
             code_to_id[code] = cid
-        if name:
+        if name and name not in name_to_id:
             name_to_id[name] = cid
 
     def resolve_country_id(code, name):
@@ -43,28 +43,28 @@ def insert_laureates(json_file: str, db_name: str) -> None:
     for laureate in data.get("laureates", []):
         firstname = (laureate.get("firstname") or "").strip()
         surname = (laureate.get("surname") or "").strip()
-        full_name = f"{firstname} {surname}".strip() if surname else firstname
+        full_name = f"{firstname} {surname}".strip()
 
         gender = (laureate.get("gender") or "").strip() or None
         born = _normalize_date(laureate.get("born"))
         died = _normalize_date(laureate.get("died"))
 
-        born_country_id = resolve_country_id(
+        bornCountry_id = resolve_country_id(
             laureate.get("bornCountryCode"),
             laureate.get("bornCountry"),
         )
-        died_country_id = resolve_country_id(
+        diedCountry_id = resolve_country_id(
             laureate.get("diedCountryCode"),
             laureate.get("diedCountry"),
         )
 
         to_insert.append(
-            (full_name, gender, born, died, born_country_id, died_country_id)
+            (full_name, gender, born, died, bornCountry_id, diedCountry_id)
         )
 
     cur.executemany(
         """
-        INSERT INTO laureate (name, gender, born, died, born_country_id, died_country_id)
+        INSERT INTO laureate (name, gender, born, died, bornCountry_id, diedCountry_id)
         VALUES (?, ?, ?, ?, ?, ?)
         """,
         to_insert,

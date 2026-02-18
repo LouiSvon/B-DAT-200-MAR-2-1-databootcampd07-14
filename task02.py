@@ -5,47 +5,48 @@ def create_database(db_path: str) -> None:
         raise TypeError
 
     conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
+    cur = conn.cursor()
 
-    cursor.execute("""
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS country (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            code TEXT UNIQUE,
+            code TEXT,
             name TEXT
         )
     """)
 
-    cursor.execute("""
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS category (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT UNIQUE
+            name TEXT NOT NULL UNIQUE
         )
     """)
 
-    cursor.execute("""
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS laureate (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
             gender TEXT,
-            born TEXT,
-            died TEXT,
-            born_country_id INTEGER,
-            died_country_id INTEGER,
-            FOREIGN KEY (born_country_id) REFERENCES country(id),
-            FOREIGN KEY (died_country_id) REFERENCES country(id)
+            born DATE,
+            died DATE,
+            bornCountry_id INTEGER,
+            diedCountry_id INTEGER,
+            FOREIGN KEY (bornCountry_id) REFERENCES country(id),
+            FOREIGN KEY (diedCountry_id) REFERENCES country(id)
         )
     """)
 
-    cursor.execute("""
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS prize (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             laureate_id INTEGER,
             category_id INTEGER,
+            motivation TEXT,
             year INTEGER,
-            affiliation_country_id INTEGER,
+            affiliation_id INTEGER,
             FOREIGN KEY (laureate_id) REFERENCES laureate(id),
             FOREIGN KEY (category_id) REFERENCES category(id),
-            FOREIGN KEY (affiliation_country_id) REFERENCES country(id)
+            FOREIGN KEY (affiliation_id) REFERENCES country(id)
         )
     """)
 

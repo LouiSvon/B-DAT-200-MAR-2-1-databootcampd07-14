@@ -11,9 +11,9 @@ def insert_categories(json_file: str, db_name: str) -> None:
     categories = set()
     for laureate in data.get("laureates", []):
         for prize in laureate.get("prizes", []):
-            category = prize.get("category")
-            if isinstance(category, str) and category.strip():
-                categories.add(category.strip())
+            cat = (prize.get("category") or "").strip()
+            if cat:
+                categories.add(cat)
 
     conn = sqlite3.connect(db_name)
     cur = conn.cursor()
